@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="DemoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="dept">
+          <Key>
+            <PropertyRef Name="deptid" />
+          </Key>
+          <Property Name="deptid" Type="int" Nullable="false" />
+          <Property Name="dname" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="order">
+          <Key>
+            <PropertyRef Name="order_id" />
+          </Key>
+          <Property Name="order_id" Type="int" Nullable="false" />
+          <Property Name="qty" Type="int" />
+          <Property Name="pid" Type="int" />
+        </EntityType>
+        <EntityType Name="tbl_employee">
+          <Key>
+            <PropertyRef Name="ecode" />
+          </Key>
+          <Property Name="ecode" Type="int" Nullable="false" />
+          <Property Name="ename" Type="varchar" MaxLength="50" />
+          <Property Name="salary" Type="int" />
+          <Property Name="deptid" Type="int" />
+        </EntityType>
+        <Association Name="FK_tbl_employee_dept">
+          <End Role="dept" Type="Self.dept" Multiplicity="0..1" />
+          <End Role="tbl_employee" Type="Self.tbl_employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="dept">
+              <PropertyRef Name="deptid" />
+            </Principal>
+            <Dependent Role="tbl_employee">
+              <PropertyRef Name="deptid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="sp_updateemp" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ec" Type="int" Mode="In" />
+          <Parameter Name="sal" Type="int" Mode="In" />
+        </Function>
+        <EntityContainer Name="DemoDBModelStoreContainer">
+          <EntitySet Name="dept" EntityType="Self.dept" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="order" EntityType="Self.order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbl_employee" EntityType="Self.tbl_employee" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_tbl_employee_dept" Association="Self.FK_tbl_employee_dept">
+            <End Role="dept" EntitySet="dept" />
+            <End Role="tbl_employee" EntitySet="tbl_employee" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DemoDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="DemoDBEntities" annotation:LazyLoadingEnabled="true">
+          <FunctionImport Name="sp_updateemp">
+            <Parameter Name="ec" Mode="In" Type="Int32" />
+            <Parameter Name="sal" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="orders" EntityType="DemoDBModel.order" />
+          <EntitySet Name="depts" EntityType="DemoDBModel.dept" />
+          <EntitySet Name="tbl_employee" EntityType="DemoDBModel.tbl_employee" />
+          <AssociationSet Name="FK_tbl_employee_dept" Association="DemoDBModel.FK_tbl_employee_dept">
+            <End Role="dept" EntitySet="depts" />
+            <End Role="tbl_employee" EntitySet="tbl_employee" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="order">
+          <Key>
+            <PropertyRef Name="order_id" />
+          </Key>
+          <Property Name="order_id" Type="Int32" Nullable="false" />
+          <Property Name="qty" Type="Int32" />
+          <Property Name="pid" Type="Int32" />
+        </EntityType>
+        <EntityType Name="dept">
+          <Key>
+            <PropertyRef Name="deptid" />
+          </Key>
+          <Property Name="deptid" Type="Int32" Nullable="false" />
+          <Property Name="dname" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tbl_employee" Relationship="DemoDBModel.FK_tbl_employee_dept" FromRole="dept" ToRole="tbl_employee" />
+        </EntityType>
+        <EntityType Name="tbl_employee">
+          <Key>
+            <PropertyRef Name="ecode" />
+          </Key>
+          <Property Name="ecode" Type="Int32" Nullable="false" />
+          <Property Name="ename" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="salary" Type="Int32" />
+          <Property Name="deptid" Type="Int32" />
+          <NavigationProperty Name="dept" Relationship="DemoDBModel.FK_tbl_employee_dept" FromRole="tbl_employee" ToRole="dept" />
+        </EntityType>
+        <Association Name="FK_tbl_employee_dept">
+          <End Type="DemoDBModel.dept" Role="dept" Multiplicity="0..1" />
+          <End Type="DemoDBModel.tbl_employee" Role="tbl_employee" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="dept">
+              <PropertyRef Name="deptid" />
+            </Principal>
+            <Dependent Role="tbl_employee">
+              <PropertyRef Name="deptid" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DemoDBModelStoreContainer" CdmEntityContainer="DemoDBEntities">
+          <FunctionImportMapping FunctionImportName="sp_updateemp" FunctionName="DemoDBModel.Store.sp_updateemp" />
+          <EntitySetMapping Name="orders">
+            <EntityTypeMapping TypeName="DemoDBModel.order">
+              <MappingFragment StoreEntitySet="order">
+                <ScalarProperty Name="pid" ColumnName="pid" />
+                <ScalarProperty Name="qty" ColumnName="qty" />
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="depts">
+            <EntityTypeMapping TypeName="DemoDBModel.dept">
+              <MappingFragment StoreEntitySet="dept">
+                <ScalarProperty Name="dname" ColumnName="dname" />
+                <ScalarProperty Name="deptid" ColumnName="deptid" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbl_employee">
+            <EntityTypeMapping TypeName="DemoDBModel.tbl_employee">
+              <MappingFragment StoreEntitySet="tbl_employee">
+                <ScalarProperty Name="deptid" ColumnName="deptid" />
+                <ScalarProperty Name="salary" ColumnName="salary" />
+                <ScalarProperty Name="ename" ColumnName="ename" />
+                <ScalarProperty Name="ecode" ColumnName="ecode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
